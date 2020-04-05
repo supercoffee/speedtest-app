@@ -1,0 +1,23 @@
+---
+version: "3"
+
+services:
+  server:
+    image: 'node:12.16.1-alpine'
+    user: "node"
+    working_dir: /app
+    volumes:
+    - ./server:/app
+    command: "npm start"
+    expose:
+      - "8088"
+
+  app:
+    image: 'node:12.16.1-alpine'
+    user: "node"
+    working_dir: /app
+    volumes:
+      - ./app:/app
+    command: "npm start"
+    expose:
+      - "4200"
