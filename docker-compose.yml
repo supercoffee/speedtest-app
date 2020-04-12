@@ -2,22 +2,46 @@
 version: "3"
 
 services:
+  db:
+    image: "mongo"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+#      MONGO_INITDB_DATABASE: speedtest-app
+    ports:
+      - "27018:27017"
+
   server:
-    image: 'node:12.16.1-alpine'
+    build:
+      context: ./server
     user: "node"
     working_dir: /app
     volumes:
     - ./server:/app
     command: "npm start"
-    expose:
-      - "8088"
+    ports:
+      - '8088:3000'
+    environment:
+      DB_USER: root
+      DB_PASSWORD: password
+      DB_NAME: speedtest-app
 
-  app:
-    image: 'node:12.16.1-alpine'
-    user: "node"
-    working_dir: /app
-    volumes:
-      - ./app:/app
-    command: "npm start"
-    expose:
-      - "4200"
+#  app:
+#    image: 'node:12.16.1-alpine'
+#    user: "node"
+#    working_dir: /app
+#    volumes:
+#      - ./app:/app
+#    command: "npm start"
+#    ports:
+#      - '4200:4200'
+#    expose:
+#      - "4200"
+#
+#  iperf3:
+#    image: 'mlabbe/iperf3'
+#    command: '-s -J --logfile /log/iperf3.log.json'
+#    ports:
+#    - "5201:5201"
+#    volumes:
+#    - ./data/:/log
