@@ -1,10 +1,14 @@
+import {iperf3, TestType} from "./src/iperf-lib";
 
 const { exec } = require("child_process");
 const express = require('express');
 const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
 
 const app = express();
 const port = 3000;
+
+app.use(bodyParser.json());
 
 const dbConnection = mongoose.connect("mongodb://db", {
     dbName: process.env.DB_NAME,
@@ -17,11 +21,6 @@ const dbConnection = mongoose.connect("mongodb://db", {
 //     console.log(stdout);
 // });
 // console.log('running server');
-
-enum TestType {
-    speed = 'udp',
-    packetLoss = 'tcp'
-}
 
 
 interface RunTestRequest {
@@ -38,14 +37,25 @@ interface RunTestRequest {
 
 app.post('/test', (req, res, next) => {
 
-    const clientAddr = 'host.docker.internal'; //req.connection.remoteAddress;
+    const body =  req.body as RunTestRequest;
+
+    const clientAddr = body.clientIp;
+    const type = body.testType;
+
     // const ipv4 = clientAddr.match(/(\d+\.?){4}/)[0];
     // console.log(`${ipv4}`);
 
-    exec(`iperf3 -J -c ${clientAddr}`, (error, stdout, sterr) => {
-        console.log(sterr);
-        res.send(stdout);
-    });
+    iperf3(clientAddr, type).then((result) => {
+
+        res.json(result);
+    }).catch((err) => {
+        next(err);
+    })
+    // exec(`iperf3 -J -u -c ${body.clientIp}`, (error: any, stdout: string, sterr) => {
+    //     console.log(sterr);
+    //     const response = JSON.parse(stdout);
+    //     res.json(response);
+    // });
 
 });
 
