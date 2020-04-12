@@ -1,7 +1,7 @@
 import {Document, Schema} from "mongoose";
 import * as mongoose from "mongoose";
 
-export interface TestResults extends Document {
+export interface TestResults  {
 
     start: number;
     end: number;
@@ -17,7 +17,7 @@ export interface TestResults extends Document {
     packets: number;
 }
 
-const TestResultSchema: Schema = new Schema({
+export const TestResultSchema: Schema = new Schema({
     start: {
         type: Number,
     },
@@ -53,7 +53,7 @@ export interface ISpeedTest extends Document {
     results: TestResults
 }
 
-const SpeedTestSchema: Schema = new Schema({
+export const SpeedTestSchema: Schema = new Schema({
     timestamp: {
         type: Date
     },

@@ -52,10 +52,10 @@ export namespace Iperf3 {
         sender: boolean;
     }
 
-    interface TcpEnd {
+    export interface TcpEnd {
         streams: EndStreamSummary[];
-        sum_sent: any;
-        sum_received: any;
+        sum_sent: BaseStats;
+        sum_received: BaseStats;
     }
 
     interface EndStreamSummary {
@@ -70,7 +70,7 @@ export namespace Iperf3 {
         mean_rtt: number;
     }
 
-    interface UdpEnd {
+    export interface UdpEnd {
         streams: UdpSummary[];
         sum: UdpSummary;
     }
