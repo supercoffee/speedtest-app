@@ -1,6 +1,7 @@
 import {iperf3, TestType} from "./src/iperf-lib";
 import {transformOutputToModel} from "./src/mapping";
 import {RunTestRequest} from "./src/wire-models";
+import {Client} from "@elastic/elasticsearch";
 
 const express = require('express');
 const mongoose = require('mongoose');
@@ -10,6 +11,8 @@ const app = express();
 const port = 3000;
 
 app.use(bodyParser.json());
+
+const esClient = new Client({node: process.env.ES_URL});
 
 mongoose.connect("mongodb://db", {
     dbName: process.env.DB_NAME,
@@ -23,10 +26,16 @@ app.post('/test', (req, res, next) => {
     const clientAddr = body.clientIp;
     const type = body.testType;
     const reverse = body.reverse;
+    const meta = body.meta;
 
     iperf3(clientAddr, type, reverse).then((result) => {
-        const resultModel = transformOutputToModel(result);
-        return resultModel.save();
+        return esClient.index({
+            index: 'test-results',
+            body: {
+                result: result,
+                meta: body.meta
+            }
+        });
 
     }).then((model) => {
 

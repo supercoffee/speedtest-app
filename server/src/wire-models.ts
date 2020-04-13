@@ -1,6 +1,7 @@
 import {TestType} from "./iperf-lib";
 
 export interface RunTestRequest {
+    meta: any;
     clientIp: string;
     testType: TestType;
 
